@@ -1,0 +1,23 @@
+
+
+
+<ion-content padding>
+
+    <ion-grid *ngFor="let pigeon of pigeons; let i = index;" (tap)="onTap(i)">
+      <ion-row>
+        <ion-col col-4>
+          <ion-card-header style="white-space:normal; margin-top:8px;">{{ pigeon.date | amTimeAgo }}</ion-card-header>
+        </ion-col>
+        <ion-col style="padding-bottom:0px;"col-8>
+          <ion-card-title><h1 style="margin-bottom:0px; text-transform:capitalize; font-size: .8em">{{ pigeon.title }}</h1></ion-card-title>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col offset-4 style="padding-top:0px;">
+          <ion-note>{{ pigeon.from.username }} to {{ pigeon.to }}</ion-note>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+</ion-content>
+

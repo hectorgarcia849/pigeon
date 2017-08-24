@@ -1,0 +1,26 @@
+<ion-header>
+
+  <ion-navbar [hideBackButton]="descriptors < 3">
+    <ion-title>Describe</ion-title>
+    <ion-buttons end>
+      <button ion-button clear small [disabled]="descriptors < 3" (click)="onNext()" *ngIf="fromSignIn">DONE</button>
+    </ion-buttons>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content>
+
+  <descriptors (hasMinDescriptors)="descriptors = $event"></descriptors>
+
+  <ion-grid>
+    <ion-row text-center>
+      <ion-col offset-3 col-6>
+        <ion-note *ngIf="descriptors < 3">Please select at least three descriptors</ion-note>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+
+</ion-content>

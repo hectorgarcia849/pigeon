@@ -1,0 +1,54 @@
+<ion-header>
+
+</ion-header>
+
+<ion-content padding>
+
+  <div style="height:100px"></div>
+
+  <ion-grid>
+
+    <ion-row text-center>
+      <ion-col>
+        <h1>Pigeon</h1>
+      </ion-col>
+    </ion-row>
+
+    <ion-row style="height:50px"></ion-row>
+
+    <form #f="ngForm" (ngSubmit)="onSubmit(f)">
+      <ion-item>
+        <ion-label floating>EMAIL</ion-label>
+        <ion-input type="email" name="email" ngModel required></ion-input>
+      </ion-item>
+
+      <ion-item *ngIf="!isReturningUser">
+        <ion-label floating>USERNAME</ion-label>
+        <ion-input type="text" name="username" ngModel required></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label floating>PASSWORD</ion-label>
+        <ion-input type="password" name="password"ngModel required [minlength]="8"></ion-input>
+      </ion-item>
+
+      <ion-row>
+        <ion-col offset-3 col-6 text-center>
+          <button text-center ion-button round small type='submit' *ngIf="isReturningUser" [disabled]="!f.valid">SIGN IN</button>
+          <button ion-button round small type='submit' *ngIf="!isReturningUser" [disabled]="!f.valid">SIGN UP</button>
+        </ion-col>
+      </ion-row>
+
+    </form>
+    <ion-row>
+      <ion-col offset-3 col-6 text-center>
+        <button ion-button clear small (tap)="onNewUser()" *ngIf="isReturningUser">New User? Tap here.</button>
+        <button ion-button clear small (tap)="onNewUser()" *ngIf="!isReturningUser">Back to Sign In</button>
+      </ion-col>
+    </ion-row>
+
+  </ion-grid>
+
+
+
+</ion-content>

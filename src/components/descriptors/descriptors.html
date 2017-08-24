@@ -1,0 +1,25 @@
+
+<ion-grid>
+  <ion-row style="height: 50px;"></ion-row>
+  <ion-row text-center>
+    <ion-col>
+      <ion-title style="font-size:24pt">
+        Help Us, Help You!
+      </ion-title>
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col text-center col-8 offset-2>
+      <p>
+        To better your results select the TAGS that best describe you
+      </p>
+    </ion-col>
+  </ion-row>
+
+  <ion-row style="height:100px"></ion-row>
+  <ion-row class="descriptorsRow">
+    <ion-col #c class='descriptorsCol' *ngFor="let descriptor of descriptors; let i = index">
+      <button ion-button round block [outline]="!isSelected(descriptor)" small class="descriptors" text-center (click)="onSelect(i)">{{ descriptor }}</button>
+    </ion-col>
+  </ion-row>
+</ion-grid>
