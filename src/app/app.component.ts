@@ -7,13 +7,14 @@ import {TabsPage} from "../pages/tabs/tabs";
 import firebase from 'firebase';
 import {AuthenticationService} from "../services/authentication.service";
 
-declare var config;
+declare let config;
 
 @Component({
   templateUrl: 'app.html'
 })
 export class MyApp {
 
+  //commit
   rootPage:any;
   signinPage = SigninPage;
   isAuthenticated = false;
