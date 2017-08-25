@@ -4,7 +4,6 @@ import {Pigeon} from "../../models/pigeon.model";
 import {SelectedPostPage} from "../selected-post/selected-post";
 import {PigeonService} from "../../services/pigeon.service";
 
-
 @IonicPage()
 @Component({
   selector: 'page-feed',
@@ -23,8 +22,9 @@ export class FeedPage implements OnInit{
   }
 
   ionViewWillEnter(){
-    this.pigeons = this.pigeonService.getPigeons();
-
+    this.pigeonService.getPigeons().on('value', (pigeons) => {
+      this.pigeons = this.pigeonService.snapshotToArray(pigeons);
+    });
   }
 
   onTap(index:number){

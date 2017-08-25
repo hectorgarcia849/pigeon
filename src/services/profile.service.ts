@@ -60,7 +60,7 @@ export class ProfileService {
     const userId = this.authService.getActiveUser().uid;
 
     return this.http.put('https://pigeon-e922b.firebaseio.com/users/' + userId + '/profile.json?auth=' + token, this.profile)
-        .map((response: Response) => {return response.json()});
+        .map((response: Response) => {return response.json();});
   }
 
   getUsername(){

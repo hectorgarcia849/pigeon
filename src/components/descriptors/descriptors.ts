@@ -27,13 +27,11 @@ export class DescriptorsComponent implements AfterContentInit, OnInit, OnDestroy
     this.selectedDescriptors = this.profileService.getDescriptors();
   }
 
-  // ionViewWillEnter(){
-  //   this.selectedDescriptors = this.profileService.getDescriptors();
-  // }
+  ionViewWillEnter(){
+    this.fromSignIn = this.navParams.get('fromSignIn');
+  }
 
   ngAfterContentInit(){
-    console.log('ngAfterContentInit() DescribeComponent', 'fromSignIn', this.navParams.get('fromSignIn'));
-    this.fromSignIn = this.navParams.get('fromSignIn');
     this.hasMinDescriptors.emit(this.selectedDescriptors.length);
   }
 
@@ -46,10 +44,10 @@ export class DescriptorsComponent implements AfterContentInit, OnInit, OnDestroy
         .subscribe(
           () => {
           }),
-        ((error) => {
+        (error) => {
           console.log(error);
           //this.handleError(error.json().error);
-        });
+        };
     });
   }
 
@@ -67,26 +65,10 @@ export class DescriptorsComponent implements AfterContentInit, OnInit, OnDestroy
   }
 
   isSelected(descriptor:string){
-    if(this.selectedDescriptors.indexOf(descriptor) != -1) {
-      return true;
-    }
-    else {
-      return false;
-    }
+    return this.selectedDescriptors.indexOf(descriptor) != -1;
   }
 
   onNext() {
     this.navCtrl.pop();
   }
-
-  private handleError(errorMessage: string){
-    const alert = this.alertCtrl.create({
-      title: 'error occurred!',
-      message: errorMessage,
-      buttons: ['Ok']
-    });
-    alert.present();
-  }
-
-
 }

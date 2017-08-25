@@ -6,8 +6,6 @@ export class AuthenticationService {
   constructor(){
   }
 
-
-
   signup(email: string, password: string){
     return firebase.auth().createUserWithEmailAndPassword(email,password);
   }
@@ -25,12 +23,7 @@ export class AuthenticationService {
   }
 
   isSignedIn(){
-    if(this.getActiveUser() != null){
-      return true;
-    }
-    else {
-      return false;
-    }
+    return this.getActiveUser();
   }
 
   isEmailVerified() {

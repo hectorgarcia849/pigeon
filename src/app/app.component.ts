@@ -6,6 +6,7 @@ import {SigninPage} from "../pages/signin/signin";
 import {TabsPage} from "../pages/tabs/tabs";
 import firebase from 'firebase';
 import {AuthenticationService} from "../services/authentication.service";
+import {ProfileService} from "../services/profile.service";
 
 declare let config;
 
@@ -14,13 +15,17 @@ declare let config;
 })
 export class MyApp {
 
-  //commit
   rootPage:any;
   signinPage = SigninPage;
   isAuthenticated = false;
   @ViewChild('nav') nav: NavController;
 
-  constructor(platform: Platform, statusBar: StatusBar, splashScreen: SplashScreen, private menuCtrl: MenuController, private authService: AuthenticationService) {
+  constructor(platform: Platform,
+              statusBar: StatusBar,
+              splashScreen: SplashScreen,
+              private menuCtrl: MenuController,
+              private authService: AuthenticationService,
+              private profileService: ProfileService) {
     firebase.initializeApp({
       apiKey: config.apiKey,
       authDomain: config.authDomain,
@@ -34,11 +39,24 @@ export class MyApp {
       if(user) { //checks if user is set, so authenticated/signed in
         this.isAuthenticated = true;
         this.rootPage = TabsPage;
+        this.authService.getActiveUser().getIdToken().then((token)=>{
+          this.profileService.retrieveProfileFromServerDB(token).subscribe(
+            ()=>{
+              console.log('successfully loaded profile on startup')
+            },
+            (error)=>{
+              console.log('did not succeed in loading profile on startup', error.json());
+            }
+          );
+        });
+
       } else { //if not authenticated/not signed in
         this.isAuthenticated = false;
         this.rootPage = SigninPage;
       }
     });
+
+
 
 
     platform.ready().then(() => {
