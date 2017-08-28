@@ -15,23 +15,18 @@
 
 <ion-content padding>
 
-  <ion-fab top right edge>
-    <button small ion-fab color="primary" (click)="onCreateMsg()"><ion-icon name="add"></ion-icon></button>
-  </ion-fab>
+  <!--<ion-fab top right edge>-->
+    <!--<button ion-fab [color]="primary" (click)="onCreateMsg()"><ion-icon name="add"></ion-icon></button>-->
+  <!--</ion-fab>-->
 
-  <ion-grid *ngFor="let message of messages; let i = index;" (click)="onSelectMessage(i)">
+  <ion-grid *ngFor="let chat of chats; let i = index;" (click)="onSelectMessage(i)">
     <ion-row>
-      <ion-col col-6>{{ message.from }}</ion-col>
-      <ion-col col-6 text-end><ion-note>{{ message.date | amTimeAgo }}</ion-note></ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col col-10>
-        <h3>{{ message.title }}</h3>
-      </ion-col>
+      <ion-col col-6>{{ chat.from.username }}</ion-col>
+      <ion-col col-6 text-end><ion-note>{{ convertTimeStampToDate(chat.timestamp) | amTimeAgo }}</ion-note></ion-col>
     </ion-row>
     <ion-row>
       <ion-col col-8>
-        <ion-note style="white-space:nowrap">{{ message.body }}</ion-note>
+        <ion-note style="white-space:nowrap">{{ chat.lastMessage }}</ion-note>
       </ion-col>
     </ion-row>
   </ion-grid>

@@ -1,17 +1,19 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>{{ message.from }}</ion-title>
+    <ion-title>{{ sender }}</ion-title>
   </ion-navbar>
 
 </ion-header>
 
 
-<ion-content padding>
-  <ion-scroll>
+<ion-content>
 
-  </ion-scroll>
-
+    <ion-list no-lines>
+      <ion-item *ngFor="let msg of messagesFrom">
+        <chat-bubble [message]=msg></chat-bubble>
+      </ion-item>
+    </ion-list>
 </ion-content>
 
 <ion-footer>

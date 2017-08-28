@@ -17,20 +17,20 @@
           </ion-item>
       </ion-row>
 
-      <ion-list>
-        <ion-item>
-          <ion-avatar></ion-avatar>
-        </ion-item>
-        <ion-item>
-          <ion-avatar></ion-avatar>
-        </ion-item>
-        <ion-item>
-          <ion-avatar></ion-avatar>
-        </ion-item>
-        <ion-item>
-          <ion-avatar></ion-avatar>
-        </ion-item>
-      </ion-list>
+      <!--<ion-list>-->
+        <!--<ion-item>-->
+          <!--<ion-avatar></ion-avatar>-->
+        <!--</ion-item>-->
+        <!--<ion-item>-->
+          <!--<ion-avatar></ion-avatar>-->
+        <!--</ion-item>-->
+        <!--<ion-item>-->
+          <!--<ion-avatar></ion-avatar>-->
+        <!--</ion-item>-->
+        <!--<ion-item>-->
+          <!--<ion-avatar></ion-avatar>-->
+        <!--</ion-item>-->
+      <!--</ion-list>-->
 
     </ion-grid>
 
@@ -41,7 +41,7 @@
   <ion-toolbar>
     <ion-textarea type="text" placeholder="Type a message..."></ion-textarea>
     <ion-buttons end>
-      <button small ion-button icon-end type="submit"><ion-icon name="send"></ion-icon></button>
+      <button small ion-button icon-end (click)="sendMessage()"><ion-icon name="send"></ion-icon></button>
     </ion-buttons>
   </ion-toolbar>
 </ion-footer>

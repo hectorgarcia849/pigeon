@@ -31,6 +31,8 @@ export class DescriptorsComponent implements AfterContentInit, OnInit, OnDestroy
     this.fromSignIn = this.navParams.get('fromSignIn');
   }
 
+  ionViewCanLeave(): boolean{return true;}
+
   ngAfterContentInit(){
     this.hasMinDescriptors.emit(this.selectedDescriptors.length);
   }

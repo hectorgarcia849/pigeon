@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { ErrorHandler, NgModule } from '@angular/core';
-import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
+import { IonicApp, IonicErrorHandler, IonicModule} from 'ionic-angular';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 
@@ -22,9 +22,8 @@ import {AuthenticationService} from "../services/authentication.service";
 import {ComponentsModule} from "../components/components.module";
 import {HttpModule} from "@angular/http";
 import {PigeonService} from "../services/pigeon.service";
-
-
-;
+import {MessagesService} from "../services/messages.service";
+import {TabsService} from "../services/tabs.service";
 
 @NgModule({
   declarations: [
@@ -71,7 +70,9 @@ import {PigeonService} from "../services/pigeon.service";
     Keyboard,
     ProfileService,
     AuthenticationService,
-    PigeonService
+    PigeonService,
+    MessagesService,
+    TabsService
   ]
 })
 export class AppModule {}

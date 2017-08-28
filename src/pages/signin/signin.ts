@@ -8,7 +8,6 @@ import {AuthenticationService} from "../../services/authentication.service";
 import {NgForm} from "@angular/forms";
 import {DescribePage} from "../describe/describe";
 import {ProfileService} from "../../services/profile.service";
-import {Profile} from "../../models/profile.model";
 
 
 

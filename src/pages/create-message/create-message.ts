@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage  } from 'ionic-angular';
+import {MessagesService} from "../../services/messages.service";
 
 @IonicPage()
 @Component({
@@ -8,11 +9,12 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 })
 export class CreateMessagePage {
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  constructor(private messagesService: MessagesService) {
   }
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad CreateMessagePage');
-  }
+
+
+
+
 
 }
