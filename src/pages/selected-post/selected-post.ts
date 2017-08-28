@@ -33,6 +33,7 @@ export class SelectedPostPage implements OnInit {
   }
 
   onSendMessage() {
+    console.log('sendMessage');
     const messagesPageIndex = 1;
     this.navCtrl.pop();
     this.tabsService.changeIndex(messagesPageIndex, [SelectedMessagePage], [{messagesFrom: -1, sender: 'new', mode: 'newMessage'}]);

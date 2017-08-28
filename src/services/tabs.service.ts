@@ -10,6 +10,7 @@ export class TabsService {
 
   changeIndex(index:number, loadChild:any[], loadOptions?:any[]){
     this.subjectIndexChange.next({index:index, loadChild:loadChild, loadOptions:loadOptions});
+    console.log({index:index, loadChild:loadChild, loadOptions:loadOptions});
   }
 
 
