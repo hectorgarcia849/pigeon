@@ -6,11 +6,11 @@
     <ion-grid *ngFor="let pigeon of pigeons; let i = index;" (tap)="onTap(i)">
       <ion-row text-center>
         <ion-col col-4>
-          <ion-card-header style="white-space:normal; margin-top:5px; padding:10px 10px 10px 10px">{{ pigeon.date | amTimeAgo }}</ion-card-header>
+          <ion-card-header style="white-space:normal; margin-top:5px; padding:10px 10px 10px 10px">{{ convertTimestampToDate(pigeon.created)| amTimeAgo }}</ion-card-header>
         </ion-col>
         <ion-col style="padding-bottom:0;" col-8>
           <ion-card-title><h1 style="margin-bottom:0; text-transform:capitalize; font-size: 1.05em">{{ pigeon.title }}</h1></ion-card-title>
-          <ion-note>{{ pigeon.from.username }} to {{ pigeon.to }}</ion-note>
+          <ion-note>{{ pigeon.from }} to {{ pigeon.to }}</ion-note>
 
         </ion-col>
       </ion-row>

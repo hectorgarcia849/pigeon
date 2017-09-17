@@ -15,10 +15,6 @@
 
 <ion-content padding>
 
-  <!--<ion-fab top right edge>-->
-    <!--<button ion-fab [color]="primary" (click)="onCreateMsg()"><ion-icon name="add"></ion-icon></button>-->
-  <!--</ion-fab>-->
-
   <ion-grid *ngFor="let chat of chats; let i = index;" (click)="onSelectMessage(i)">
     <ion-row>
       <ion-col col-6>{{ chat.from.username }}</ion-col>

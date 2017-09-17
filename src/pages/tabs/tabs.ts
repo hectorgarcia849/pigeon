@@ -43,6 +43,7 @@ export class TabsPage implements OnInit, OnDestroy {
         console.log(data);
         if(data.index > -1) {
           this.index = data.index;
+          console.log(data.index);
         }
         this.tabsRef.select(this.index);
         for(let i = 0; i < data.loadChild.length; i++){

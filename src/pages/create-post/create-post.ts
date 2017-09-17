@@ -2,8 +2,11 @@ import {Component, ViewChild} from '@angular/core';
 import {AlertController, DateTime, IonicPage, LoadingController, NavController} from 'ionic-angular';
 import {PigeonService} from "../../services/pigeon.service";
 import {NgForm} from "@angular/forms";
-import {AuthenticationService} from "../../services/authentication.service";
 import {FeedPage} from "../feed/feed";
+import {Pigeon} from "../../models/pigeon.model";
+import {ProfileService} from "../../services/profile.service";
+import {AuthenticationService} from "../../services/authentication.service";
+import {TabsService} from "../../services/tabs.service";
 
 
 
@@ -19,10 +22,12 @@ export class CreatePostPage {
 @ViewChild('datetime') datetime:DateTime;
 
   constructor(private pigeonService: PigeonService,
-              private authService: AuthenticationService,
               private loadingCtrl: LoadingController,
               private navCtrl: NavController,
-              private alertCtrl: AlertController){
+              private alertCtrl: AlertController,
+              private profileService: ProfileService,
+              private authService: AuthenticationService,
+              private tabsService: TabsService){
   }
 
   ionViewWillEnter(){
@@ -32,25 +37,31 @@ export class CreatePostPage {
   }
 
   onSendPigeon(form: NgForm) {
-    const message = {title:form.value.title, to:form.value.to, body:form.value.body, date:form.value.date};
+    const from = this.profileService.getProfile().username;
+    const pigeon = {title:form.value.title, to:form.value.to, from, body:form.value.body, encounterDate:new Date(form.value.date).getTime()};
     const loading = this.loadingCtrl.create({content: 'Sending Pigeon'});
     loading.present();
-    return this.authService.getActiveUser().getIdToken()
-      .then((token)=>{
-        this.pigeonService.sendPigeon(message, token).subscribe(
-          ()=>{
-            form.reset();
-            this.navCtrl.setRoot(this.feedPage);
-            loading.dismiss();
-          },
-          (error)=>{
-            loading.dismiss();
-            const alert = this.alertCtrl.create({
-              title: 'Error Occurred',
-              message: error.json().error
-              });
-            alert.present();
-          })
+
+    this.authService.getToken()
+      .then((token) => {
+        return this.pigeonService
+          .sendPigeon(token, pigeon)
+          .subscribe(
+              (sentPigeon:Pigeon) => {
+                loading.dismiss().then(() => {
+                  this.tabsService.changeIndex(2, []);
+                  form.reset();
+                });
+              },
+            (error) => {
+                loading.dismiss();
+                const alert = this.alertCtrl.create({
+                  title: 'An error occurred.  Please try again later.',
+                  message: error.json().error
+                });
+                alert.present();
+            }
+          );
       });
   }
 }

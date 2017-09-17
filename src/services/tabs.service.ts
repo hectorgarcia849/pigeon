@@ -9,6 +9,7 @@ export class TabsService {
   constructor(){}
 
   changeIndex(index:number, loadChild:any[], loadOptions?:any[]){
+    //index refers to which tab to select from left to right, it makes that the root.  Then, allows any child views to be loaded on this with options.
     this.subjectIndexChange.next({index:index, loadChild:loadChild, loadOptions:loadOptions});
     console.log({index:index, loadChild:loadChild, loadOptions:loadOptions});
   }

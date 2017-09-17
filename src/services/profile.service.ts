@@ -1,11 +1,9 @@
 
-import {Profile} from "../models/profile.model";
 import {Injectable } from "@angular/core";
-import {AuthenticationService} from "./authentication.service";
 import 'rxjs/Rx';
-import {Http, Response} from "@angular/http";
+import {Http, Response, Headers} from "@angular/http";
+import {Profile} from "../models/profile.model";
 import {Observable} from "rxjs/Observable";
-
 
 @Injectable()
 
@@ -13,27 +11,63 @@ export class ProfileService {
 
   private profile:Profile;
 
-  constructor(public authService: AuthenticationService, public http: Http){
+  constructor(public http: Http){
+
   }
 
   //user account details
 
-  newProfile(username:string){
+  createProfile(token:string, profile: {username:string, firstName:string, lastName:string, descriptors:string[], locationTimes:{country:string, city:string, place:string, fromDate:number, toDate:number}[]}) {
+
     this.profile = {
-      username: username,
-      descriptors: [],
-      locationTimes: []
-    };
+      _owner: null,
+      created: null,
+      username: profile.username,
+      firstName: profile.firstName,
+      lastName: profile.lastName,
+      descriptors: profile.descriptors,
+      locationTimes: profile.locationTimes
+    }
 
-    this.authService.getActiveUser().getIdToken().then((token) => this.storeProfileToServerDB(token));
+    const body = JSON.stringify(this.profile);
+    const headers = new Headers({'Content-Type': 'application/json'});
 
+    console.log(token);
+    console.log(body);
+
+    return this.http.post('https://pacific-river-87352.herokuapp.com/profile?token=' + token, body, {headers})
+      .map((response: Response) => {
+        console.log(response.json());
+        this.profile = response.json().profile;
+        return this.profile;})
+      .catch((error: Response) => Observable.throw(error.json()));
+  }
+
+  fetchProfile(token: string){
+    return this.http.get('https://pacific-river-87352.herokuapp.com/profile/me?token=' + token)
+      .map((response: Response) => {
+        this.profile = response.json().profile;
+        return this.profile
+    });
+  }
+
+  storeProfile(token: string){
+    return this.http.patch(`https://pacific-river-87352.herokuapp.com/profile/me?token=${token}`, this.profile)
+      .map((response: Response) => {
+        this.profile = response.json().profile;
+        return this.profile;
+      });
   }
 
   getProfile(){
-    return this.profile;
+    if(this.profile) {
+      return this.profile;
+    }
   }
 
-  //descriptors
+  updateProfile(updatedProfile:Profile){
+    this.profile = updatedProfile;
+  }
 
   getDescriptors(): string[] {
     return this.profile.descriptors.slice();
@@ -43,43 +77,16 @@ export class ProfileService {
     this.profile.descriptors = descriptors;
   }
 
-  retrieveProfileFromServerDB(token:string):Observable<Profile>{
-    const userId = this.authService.getActiveUser().uid;
-    console.log('retrieving from db','https://pigeon-e922b.firebaseio.com/users/' + userId + '/profile.json?auth=' + token);
-
-    return this.http.get('https://pigeon-e922b.firebaseio.com/users/' + userId + '/profile.json?auth=' + token)
-        .map((response: Response) => {
-          this.profile = response.json() ? response.json() : [];
-          console.log(this.profile);
-          return this.profile;
-        });
-  }
-
-  storeProfileToServerDB(token:string):Observable<Response> {
-    console.log('storing to db', this.profile);
-    const userId = this.authService.getActiveUser().uid;
-
-    return this.http.put('https://pigeon-e922b.firebaseio.com/users/' + userId + '/profile.json?auth=' + token, this.profile)
-        .map((response: Response) => {return response.json();});
-  }
-
-  getUsername(){
-    return this.profile.username;
-  }
-
-  //profile add locationTimes
-
-  addLocationTime(location:string, date:Date) {
-    this.profile.locationTimes.push({location: location, date: date});
+  addLocationTime(country:string, city:string, place:string, fromDate:number, toDate:number) {
+    this.profile.locationTimes.push({country, city, place, fromDate, toDate});
   }
 
   removeLocationTime(index:number){
     this.profile.locationTimes.splice(index, 1);
   }
 
-  getLocationTimes(): {location:string, date:Date }[] {
+  getLocationTimes(): {country:string, city:string, place:string, fromDate:number, toDate:number}[] {
     return this.profile.locationTimes.slice();
   }
-
 
 }

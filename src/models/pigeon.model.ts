@@ -1,4 +1,4 @@
 
 export class Pigeon {
-  constructor(public created: string, public date:string, public title:string, public from:{username: string, uid:string}, public to:string, public body:string){}
+  constructor(public body:string, public created:number, public _creator:string, public encounterDate:number, public from:string, public title:string, public to:string, public _id?:string){}
 }

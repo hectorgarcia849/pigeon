@@ -1,8 +1,15 @@
-import {Component } from '@angular/core';
+import { Component } from '@angular/core';
 import {IonicPage, NavController } from 'ionic-angular';
 import {ChatMetaData } from "../../models/message.model";
 import {SelectedMessagePage} from "../selected-message/selected-message";
-import {MessagesService} from "../../services/messages.service";
+// import {MessagesService} from "../../services/messages.service";
+// import {AuthenticationService} from "../../services/authentication.service";
+// import {Subscription} from "rxjs/Subscription";
+// import {Observable} from "rxjs/Observable";
+
+
+
+
 
 @IonicPage()
 @Component({
@@ -11,21 +18,26 @@ import {MessagesService} from "../../services/messages.service";
 })
 export class MessagesPage {
 
-  chats:ChatMetaData[]=[];
+  public chats:ChatMetaData[];
   selectedMessagePage = SelectedMessagePage;
+  userId:string;
 
-  constructor(private navCtrl: NavController, private messagesService: MessagesService ) {}
+  constructor(private navCtrl: NavController) {}
 
   ionViewWillEnter(){
-    this.chats = this.messagesService.getChats();
+    //this.userId = this.authService.getActiveUser().uid;
+    //this.messagesService.chats.subscribe((metaData) =>{this.chats = metaData;});
+  }
+
+  ionViewWillUnload(){
+
   }
 
   onSelectMessage(index:number){
-    this.navCtrl.push(this.selectedMessagePage, {mode:'selectedMessage', messagesFrom: index, sender: this.chats[index].from.username});
+    this.navCtrl.push(this.selectedMessagePage, { mode:'selectedMessage', chatIndex: index, metaData: this.chats[index], sender: {username: this.chats[index].from.username, userId: this.chats[index].from.userId }});
   }
 
   convertTimeStampToDate(timestamp:number){
     return new Date(timestamp).toISOString();
   }
-
 }

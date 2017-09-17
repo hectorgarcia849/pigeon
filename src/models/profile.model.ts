@@ -1,6 +1,11 @@
-import {User} from "firebase/app";
-
 export class Profile {
+  constructor(public username:string, public firstName: string, public lastName: string, public descriptors:string[], public locationTimes:LocationTime[], public _owner?:string,  public created?:number) {}
+}
 
-  constructor(public username:string, public descriptors:string[], public locationTimes:{ location:string, date:Date }[]) {}
+interface LocationTime {
+  country:string,
+  city:string,
+  place:string,
+  fromDate:number,
+  toDate:number
 }

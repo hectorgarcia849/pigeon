@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage  } from 'ionic-angular';
-import {MessagesService} from "../../services/messages.service";
+// import {MessagesService} from "../../services/messages.service";
+import {Message} from "../../models/message.model";
 
 @IonicPage()
 @Component({
@@ -9,8 +10,11 @@ import {MessagesService} from "../../services/messages.service";
 })
 export class CreateMessagePage {
 
-  constructor(private messagesService: MessagesService) {
+  constructor() {
   }
+
+
+  sendMessage(message:Message){}
 
 
 

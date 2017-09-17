@@ -2,6 +2,7 @@ import {AfterContentInit, Component, EventEmitter, OnDestroy, OnInit} from "@ang
 import {AlertController, NavController, NavParams,} from "ionic-angular";
 import {ProfileService} from "../../services/profile.service";
 import {AuthenticationService} from "../../services/authentication.service";
+//import {AuthenticationService} from "../../services/authentication.service";
 
 @Component({
   selector: 'descriptors',
@@ -16,10 +17,10 @@ export class DescriptorsComponent implements AfterContentInit, OnInit, OnDestroy
   hasMinDescriptors = new EventEmitter<number>();
 
   constructor(public navCtrl: NavController,
-              public profileService: ProfileService,
               public navParams: NavParams,
               public alertCtrl: AlertController,
-              public authService: AuthenticationService) {
+              private profileService: ProfileService,
+              private authService: AuthenticationService) {
 
   }
 
@@ -39,17 +40,15 @@ export class DescriptorsComponent implements AfterContentInit, OnInit, OnDestroy
 
   ngOnDestroy(){
     this.profileService.updateDescriptors(this.selectedDescriptors);
-    console.log('leaving component', this.profileService.getDescriptors());
-
-    this.authService.getActiveUser().getIdToken().then((token)=> {
-      this.profileService.storeProfileToServerDB(token)
+    this.authService.getToken().then((token)=> {
+      this.profileService.storeProfile(token)
         .subscribe(
-          () => {
-          }),
+          (updatedProfile) => {
+            console.log('successful', updatedProfile);
+          },
         (error) => {
           console.log(error);
-          //this.handleError(error.json().error);
-        };
+        });
     });
   }
 
@@ -57,11 +56,9 @@ export class DescriptorsComponent implements AfterContentInit, OnInit, OnDestroy
     const descriptor: string = this.descriptors[i];
     if(this.selectedDescriptors.indexOf(descriptor) == -1) {
       this.selectedDescriptors.push(descriptor);
-      //console.log(descriptor,' not in selected list, adding to list');
     }
     else {
       this.selectedDescriptors.splice(this.selectedDescriptors.indexOf(descriptor), 1);
-      //console.log(descriptor, ' already in selected list, removing from list');
     }
     this.hasMinDescriptors.emit(this.selectedDescriptors.length);
   }

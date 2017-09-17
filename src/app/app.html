@@ -7,9 +7,11 @@
     </ion-toolbar>
   </ion-header>
   <ion-content>
-    <ion-list>
-      <button ion-item icon-left (click)="onLoad(signinPage)" *ngIf="!isAuthenticated"><ion-icon name="person"></ion-icon>Sign in</button>
-      <button ion-item icon-left (click)="onLogOut(signinPage)" *ngIf="isAuthenticated">Log out</button>
+    <ion-list no-lines>
+      <button ion-item icon-left (click)="onLoad(signinPage)" *ngIf="!isLoggedIn"><ion-icon name="person"></ion-icon>Sign in</button>
+      <button ion-item icon-left (click)="onLogOut(signinPage)" *ngIf="isLoggedIn">Log out</button>
+      <button ion-item *ngIf="isLoggedIn">Pigeons Sent</button>
+      <button ion-item *ngIf="isLoggedIn">Pigeons Liked</button>
     </ion-list>
   </ion-content>
 </ion-menu>

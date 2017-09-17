@@ -27,6 +27,16 @@
         <ion-input type="text" name="username" ngModel required></ion-input>
       </ion-item>
 
+      <ion-item *ngIf="!isReturningUser">
+        <ion-label floating>FIRSTNAME</ion-label>
+        <ion-input type="text" name="firstName" ngModel required></ion-input>
+      </ion-item>
+
+      <ion-item *ngIf="!isReturningUser">
+        <ion-label floating>LASTNAME</ion-label>
+        <ion-input type="text" name="lastName" ngModel required></ion-input>
+      </ion-item>
+
       <ion-item>
         <ion-label floating>PASSWORD</ion-label>
         <ion-input type="password" name="password"ngModel required [minlength]="8"></ion-input>
