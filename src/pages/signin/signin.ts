@@ -66,19 +66,39 @@ export class SigninPage implements OnInit {
                 loading.dismiss().then(() => {
                   this.navCtrl.setRoot(this.tabPage);
                 });
-                },
-              (error) =>{
-                console.log(error);
-                if(error.status === 404){
+              },
+              (error) => {
+                loading.dismiss().then(() => {
+                  console.log(error);
+                  if (error.status === 404) {
+                    const alert = this.alertCtrl.create({
+                      title: 'Username/Password is incorrect',
+                      message: error.message,
+                      buttons: ['Ok']
+                    });
+                    alert.present();
+                  }
 
-                }
+                });
               }
             );
         },
-        (err) => {
-          console.log(err);
+        (error) => {
+          loading.dismiss().then(() => {
+            console.log(error);
+            if (error.status === 404) {
+              const alert = this.alertCtrl.create({
+                title: 'Username/Password is incorrect',
+                message: error.message,
+                buttons: ['Ok']
+              });
+              alert.present();
+            }
+
+          });
         }
-        );
+      );
+  }
 
 
 
@@ -113,7 +133,7 @@ export class SigninPage implements OnInit {
     //     });
     //     alert.present();
     //   });
-  }
+
 
   onSignUp(form: NgForm) {
     const loading = this.loadingCtrl.create({

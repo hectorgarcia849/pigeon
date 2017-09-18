@@ -8,6 +8,7 @@
   </ion-header>
   <ion-content>
     <ion-list no-lines>
+      <ion-item ion-item *ngIf="isLoggedIn">{{username}}</ion-item>
       <button ion-item icon-left (click)="onLoad(signinPage)" *ngIf="!isLoggedIn"><ion-icon name="person"></ion-icon>Sign in</button>
       <button ion-item icon-left (click)="onLogOut(signinPage)" *ngIf="isLoggedIn">Log out</button>
       <button ion-item *ngIf="isLoggedIn">Pigeons Sent</button>

@@ -1,7 +1,7 @@
 import {Subscription} from "rxjs/Subscription";
 
 export class Message {
-  constructor(public from:{username: string, userId: string}, public to:{username: string, userId: string}, public message:string, public timestamp:number){}
+  constructor(public from:{username: string, userId: string}, public to:{username: string, userId: string}, public message:string, public timestamp?:number){}
 }
 
 export class ChatMetaData {

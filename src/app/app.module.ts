@@ -22,9 +22,9 @@ import {AuthenticationService} from "../services/authentication.service";
 import {ComponentsModule} from "../components/components.module";
 import {HttpModule} from "@angular/http";
 import {PigeonService} from "../services/pigeon.service";
-//import {MessagesService} from "../services/messages.service";
 import {TabsService} from "../services/tabs.service";
 import {IonicStorageModule} from "@ionic/storage";
+import {MessagesService} from "../services/messages.service";
 
 @NgModule({
   declarations: [
@@ -47,7 +47,7 @@ import {IonicStorageModule} from "@ionic/storage";
     MomentModule,
     ComponentsModule,
     HttpModule,
-    IonicStorageModule.forRoot()
+    IonicStorageModule.forRoot(),
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -73,7 +73,7 @@ import {IonicStorageModule} from "@ionic/storage";
     ProfileService,
     AuthenticationService,
     PigeonService,
-    //MessagesService,
+    MessagesService,
     TabsService,
     HttpModule
   ]

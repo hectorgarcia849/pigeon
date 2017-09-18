@@ -16,6 +16,7 @@ export class FeedPage implements OnInit, OnDestroy {
   pigeons: Pigeon[] = [];
   selectedPostPage = SelectedPostPage;
   pigeonsSubscription: Subscription;
+  interval;
 
   constructor(private navCtrl: NavController,
               private pigeonService: PigeonService,
@@ -24,24 +25,22 @@ export class FeedPage implements OnInit, OnDestroy {
   }
 
   ngOnInit(){
+
   }
 
   ionViewWillEnter(){
-    this.authService.getToken()
-      .then((token) =>{
-        this.pigeonsSubscription = this.pigeonService.getPigeons(token)
-          .subscribe(
-            (pigeons: Pigeon[]) => {
-              if(pigeons){
-                this.pigeons = pigeons;
-              }
-            },
-            (error) => {
-              const toast = this.toastCtrl.create({message: "Unable to load feed at this time", duration: 2000});
-              toast.present();
-            });
 
-    });
+    this.authService.getToken()
+      .then((token) => {
+        this.pigeonsSubscription = this.pigeonService.pigeons$.subscribe((pigeons:Pigeon[]) => {this.pigeons = pigeons;});
+        //this.pigeonService.getPigeons(token).subscribe((pigeons: Pigeon[]) => {this.pigeons = pigeons;})})
+        this.refreshPigeons(token);
+        this.interval = setInterval(() => {this.refreshPigeons(token);}, 20000);
+      });
+  }
+
+  refreshPigeons(token:string){
+    this.pigeonService.getPigeons(token);
   }
 
   onTap(index:number){
@@ -50,6 +49,7 @@ export class FeedPage implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.pigeonsSubscription.unsubscribe();
+    clearInterval(this.interval);
   }
 
   convertTimestampToDate(timestamp:number){

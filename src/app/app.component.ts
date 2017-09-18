@@ -1,13 +1,14 @@
-import {Component, OnDestroy, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {LoadingController, MenuController, NavController, Platform, ToastController} from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import {SigninPage} from "../pages/signin/signin";
 import {TabsPage} from "../pages/tabs/tabs";
 import {AuthenticationService} from "../services/authentication.service";
-// import {ProfileService} from "../services/profile.service";
 import {TabsService} from "../services/tabs.service";
 import {ProfileService} from "../services/profile.service";
+import {MessagesService} from "../services/messages.service";
+import {Message} from "../models/message.model"
 
 
 //declare let config;
@@ -15,12 +16,14 @@ import {ProfileService} from "../services/profile.service";
 @Component({
   templateUrl: 'app.html'
 })
-export class MyApp implements OnDestroy{
+export class MyApp implements OnInit, OnDestroy{
 
   rootPage:any;
   signinPage = SigninPage;
   isLoggedIn = false;
   loggedInSubscription = this.authService.authState$.subscribe((state) => this.isLoggedIn = state);
+  username = "";
+
   @ViewChild('nav') nav: NavController;
 
   constructor(platform: Platform,
@@ -31,28 +34,8 @@ export class MyApp implements OnDestroy{
               private authService: AuthenticationService,
               private profileService: ProfileService,
               private toastCtrl: ToastController,
-              private loadingCtrl: LoadingController) {
-
-    // firebase.auth().onAuthStateChanged(user =>{
-    //   if(user) { //checks if user is set, so authenticated/signed in
-    //     this.isAuthenticated = true;
-    //     this.rootPage = TabsPage;
-    //     this.authService.getActiveUser().getIdToken().then((token)=>{
-    //       this.profileService.retrieveProfileFromServerDB(token).subscribe(
-    //         ()=>{
-    //           console.log('successfully loaded profile on startup')
-    //         },
-    //         (error)=>{
-    //           console.log('did not succeed in loading profile on startup', error.json());
-    //         }
-    //       );
-    //     });
-    //
-    //   } else { //if not authenticated/not signed in
-    //     this.isAuthenticated = false;
-    //     this.rootPage = SigninPage;
-    //   }
-    // });
+              private loadingCtrl: LoadingController,
+              private msgService: MessagesService) {
 
     //first, check if there is a token saved on the device, if so, auto log-in and set rootpage to tabspage, else rootpage is signin
 
@@ -67,18 +50,22 @@ export class MyApp implements OnDestroy{
           this.profileService.fetchProfile(token).subscribe(
             (profile) => {
               console.log(profile);
+              this.username = profile.username;
               loading.dismiss().then(() => {
                 this.rootPage = TabsPage;
               });
             },
-            (error) =>{
+            (error) => {
               console.log(error);
               if(error.status === 404){
-
               }
             }
           );
           this.authService.updateLoggedInState(true);
+          this.msgService.connect(token);
+
+          const message = new Message({username:'fromUser', userId:'123'}, {username:'ToUser', userId:'456'}, 'message');
+          this.msgService.sendMessage(message);
         }
       }).catch(() => {this.rootPage = TabsPage});
 
@@ -88,6 +75,10 @@ export class MyApp implements OnDestroy{
       statusBar.styleDefault();
       splashScreen.hide();
     });
+  }
+
+  ngOnInit(){
+
   }
 
   onLoad(page: any){
