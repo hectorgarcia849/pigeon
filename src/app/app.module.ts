@@ -10,7 +10,7 @@ import {DescribePage} from "../pages/describe/describe";
 import {CreatePigeonPage} from "../pages/create-pigeon/create-pigeon";
 import {FeedPage} from "../pages/feed/feed";
 import {SelectedMessagePage} from "../pages/selected-message/selected-message";
-import {SelectedPostPage} from "../pages/selected-post/selected-post";
+import {SelectedPigeonPage} from "../pages/selected-pigeon/selected-pigeon";
 import {SigninPage} from "../pages/signin/signin";
 import {MessagesPage} from "../pages/messages/messages";
 import {MomentModule} from "angular2-moment";
@@ -36,7 +36,7 @@ import {AngularSvgIconModule} from "angular-svg-icon";
     FeedPage,
     MessagesPage,
     SelectedMessagePage,
-    SelectedPostPage,
+    SelectedPigeonPage,
     SigninPage,
     TabsPage,
     ProfilePage,
@@ -60,7 +60,7 @@ import {AngularSvgIconModule} from "angular-svg-icon";
     FeedPage,
     MessagesPage,
     SelectedMessagePage,
-    SelectedPostPage,
+    SelectedPigeonPage,
     SigninPage,
     TabsPage,
     ProfilePage,

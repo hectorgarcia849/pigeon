@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {IonicPage, NavController} from 'ionic-angular';
 import {Pigeon} from "../../models/pigeon.model";
-import {SelectedPostPage} from "../selected-post/selected-post";
+import {SelectedPigeonPage} from "../selected-pigeon/selected-pigeon";
 import {PigeonService} from "../../services/pigeon.service";
 import {Subscription} from "rxjs/Subscription";
 import {AuthenticationService} from "../../services/authentication.service";
@@ -14,7 +14,7 @@ import {AuthenticationService} from "../../services/authentication.service";
 export class FeedPage implements OnInit, OnDestroy {
 
   pigeons: Pigeon[] = [];
-  selectedPostPage = SelectedPostPage;
+  selectedPigeonPage = SelectedPigeonPage;
   pigeonsSubscription: Subscription;
   interval;
 
@@ -40,7 +40,7 @@ export class FeedPage implements OnInit, OnDestroy {
   }
 
   onPigeonTapped(index:number){
-    this.navCtrl.push(this.selectedPostPage, {pigeon: this.pigeons[index]});
+    this.navCtrl.push(this.selectedPigeonPage, {pigeon: this.pigeons[index]});
   }
 
   ngOnDestroy() {

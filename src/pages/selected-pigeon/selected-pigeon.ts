@@ -8,11 +8,11 @@ import {TAB} from "../../utils/tab";
 
 @IonicPage()
 @Component({
-  selector: 'page-selected-post',
-  templateUrl: 'selected-post.html'
+  selector: 'page-selected-pigeon',
+  templateUrl: 'selected-pigeon.html'
 
 })
-export class SelectedPostPage implements OnInit {
+export class SelectedPigeonPage implements OnInit {
 
   pigeon:Pigeon;
 
