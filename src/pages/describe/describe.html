@@ -3,7 +3,7 @@
   <ion-navbar [hideBackButton]="descriptors < 3">
     <ion-title>Describe</ion-title>
     <ion-buttons end>
-      <button ion-button clear small [disabled]="descriptors < 3" (click)="onNext()" *ngIf="fromSignIn">DONE</button>
+      <button ion-button clear small [disabled]="descriptors < 3" (click)="onNext()" *ngIf="pageTransitionIsFromSignIn">DONE</button>
     </ion-buttons>
   </ion-navbar>
 

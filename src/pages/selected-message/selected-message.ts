@@ -1,12 +1,12 @@
 import {Component, OnInit} from '@angular/core';
 import {AlertController, App, IonicPage, NavParams} from 'ionic-angular';
-import {ChatMetaData, Message} from "../../models/message.model";
+import {Chat, Message} from "../../models/message.model";
 import {Keyboard} from "@ionic-native/keyboard";
-// import {MessagesService} from "../../services/messages.service";
 import {ChatBubbleData} from "../../models/ChatBubbleData.model";
-// import {AuthenticationService} from "../../services/authentication.service";
-// import {ProfileService} from "../../services/profile.service";
 import {Subscription} from "rxjs/Subscription";
+import {AuthenticationService} from "../../services/authentication.service";
+import {ProfileService} from "../../services/profile.service";
+import {MessagesService} from "../../services/messages.service";
 
 
 @IonicPage()
@@ -17,41 +17,71 @@ import {Subscription} from "rxjs/Subscription";
 export class SelectedMessagePage implements OnInit {
 
   chat:ChatBubbleData[];
-  recipient:{username:string, userId:string};
-  sender:{username:string, userId:string};
+  messages:Message[] = [];
+  messageSubscription:Subscription;
+  recipient:{username:string, _id:string};
+  sender:{username:string, _id:string};
   index:number;
   mode:string;
-  metaData:ChatMetaData;
-  sendMessageSubscription:Subscription;
-  createChatSubscription:Subscription;
+  metaData:Chat;
   chat_id:string;
+  messages_id:string;
 
   constructor(public navParams: NavParams,
               private keyboard: Keyboard,
-              // private messagesService: MessagesService,
-              // private profileService: ProfileService,
-              // private authService: AuthenticationService,
+              private msgService: MessagesService,
+              private profileService: ProfileService,
+              private authService: AuthenticationService,
               private alertCtrl: AlertController,
               private appCtrl: App) {
   }
 
   ngOnInit() {
-    this.index = this.navParams.get('chatIndex');
-    // this.messagesService.chats.subscribe((metaData) =>{this.metaData = metaData[this.index];});
-    this.recipient = this.navParams.get('sender');
+    this.recipient = this.navParams.get('recipient');
+    this.sender = {username: this.profileService.getProfile().username, _id: this.authService.getUser()._id};
     this.mode = this.navParams.get('mode');
-    // this.sender = {username: this.profileService.getUsername(), userId: this.authService.getActiveUser().uid};
+    // this.messageSubscription = this.msgService.messageListener$
+    //   .subscribe((message: Message) => {
+    //     if(message){
+    //       this.messages.push(message);
+    //     }
+    //   });
+    if (this.mode === 'newChat') {
+
+    }
+
+
   }
 
   ionViewWillEnter() {
 
-    const participants = {from: {username: this.sender.username, userId: this.sender.userId}, to: {username: this.recipient.username, userId: this.recipient.userId}};
+    console.log(this.mode);
+    if (this.mode === 'selectedMessasge') {
+
+    } else if (this.mode === 'newChat') {
+      console.log(`${this.authService.getUser()._id} requesting new chat with ${this.recipient._id}`);
+      this.msgService.createChat(this.recipient._id,
+        (chat_id: string) => {
+          console.log(chat_id);
+          this.chat_id = chat_id;
+          this.msgService.joinChat(chat_id,
+            (chat_id) => {
+              console.log(`successfully joined chat: ${chat_id}`);
+              this.mode = 'selectedMessage';
+          });
+        }
+      );
+    }
+
+    // const participants = {from: {username: this.sender.username, userId: this.sender.userId}, to: {username: this.recipient.username, userId: this.recipient.userId}};
     if(this.mode === 'selectedMessage'){
-      //if user has entered page by selecting a specific chat in the messages pagbe
+      //if user has entered page by selecting a specific chat in the messages page
       //this.loadMessages(this.metaData.chat_id);
-      this.chat_id = this.metaData.chat_id;
-    } else if(this.mode === 'newMessage')
+      // this.chat_id = this.metaData._id;
+    } else if(this.mode === 'newChat')
     {
+
+
       //if user has entered page from a pigeon, then checks for pre-existing chats -- if none exist, then one is created.
       // this.messagesService.chatMetaDataExistsFor(participants)
       //   .then((exists:boolean)=>{
@@ -78,12 +108,14 @@ export class SelectedMessagePage implements OnInit {
             //if user selects a pigeon that belongs to a user with whom they have an active conversation with, then finds that chat_id and loads that conversation.
             //this.messagesService.findChatId(participants).then((chat_id)=>{
               //this.loadMessages(chat_id);
-              this.mode = "selectedMessage";
+              //this.mode = "selectedMessage";
               //this.chat_id = chat_id;
             // });
           }
         // });
-    }
+
+
+  }
 
 
   ionViewDidLoad() {
@@ -91,7 +123,14 @@ export class SelectedMessagePage implements OnInit {
   }
 
   onSend(text) {
-    const message = {from:{username: this.sender.username, userId: this.sender.userId}, to:{username: this.recipient.username, userId: this.recipient.userId}, message:text.value, timestamp:new Date().getTime()};
+    const message = new Message(this.sender._id, this.recipient._id, text.value);
+    console.log(message);
+    if(text.value !== "") {
+      this.msgService.sendMessage(message, this.chat_id, (status: string) => {
+        console.log(status)
+      });
+    }
+    text.value = "";
     //this.authService.getActiveUser().getIdToken().then((token) => {
     //   this.sendMessageSubscription = this.messagesService.sendMessage(token, message, this.chat_id)
     //     .subscribe(
@@ -105,20 +144,15 @@ export class SelectedMessagePage implements OnInit {
   }
 
   ionViewWillUnload(){
-    if(this.sendMessageSubscription){
-      this.sendMessageSubscription.unsubscribe();
-    }
-    if(this.createChatSubscription){
-      this.createChatSubscription.unsubscribe();
-    }
-  }
 
+  }
 
   parseMessagesForChatBubble(messages:Message[]):ChatBubbleData[]{
     let result:ChatBubbleData[] = [];
     for(let i=0; i < messages.length; i++){
-      const position = i%2 == 0? 'right': 'left';
-      result.push(new ChatBubbleData(messages[i].message, position, new Date(messages[i].timestamp).toISOString(), messages[i].from.username));
+      const sender = messages[i].from === this.sender._id? this.sender.username : this.recipient.username;
+      const position = sender === this.sender.username? 'right': 'left';
+      result.push(new ChatBubbleData(messages[i].message, position, new Date(messages[i].timestamp).toISOString(), sender));
     }
     return result;
   }

@@ -1,5 +1,7 @@
+import {TAB} from "../utils/tab";
+
 export class TabServiceObjectModel {
-  index:number;
-  loadChild:any[];
-  loadOptions:any[];
+  rootTab: TAB;
+  pagesToPush: any[];
+  loadOptions: any[];
 }

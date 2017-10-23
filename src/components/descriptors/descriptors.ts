@@ -1,8 +1,9 @@
 import {AfterContentInit, Component, EventEmitter, OnDestroy, OnInit} from "@angular/core";
-import {AlertController, NavController, NavParams,} from "ionic-angular";
+import { NavController, NavParams } from "ionic-angular";
 import {ProfileService} from "../../services/profile.service";
 import {AuthenticationService} from "../../services/authentication.service";
-//import {AuthenticationService} from "../../services/authentication.service";
+import {Subscription} from "rxjs/Subscription";
+import {Profile} from "../../models/profile.model";
 
 @Component({
   selector: 'descriptors',
@@ -11,60 +12,66 @@ import {AuthenticationService} from "../../services/authentication.service";
 })
 export class DescriptorsComponent implements AfterContentInit, OnInit, OnDestroy {
 
-  descriptors:string[] = ['male','female', 'tall', 'brunette', 'blue eyes', 'short', 'blonde', 'thin' ];
-  selectedDescriptors:string[];
-  fromSignIn = false;
+  descriptors: string[] = ['male','female', 'tall', 'brunette', 'blue eyes', 'short', 'blonde', 'thin' ];
+  profile: Profile;
+  pageTransitionIsfromSignIn = false;
   hasMinDescriptors = new EventEmitter<number>();
+  profileSubsciption: Subscription;
 
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
-              public alertCtrl: AlertController,
               private profileService: ProfileService,
-              private authService: AuthenticationService) {
-
-  }
+              private authService: AuthenticationService) {}
 
   ngOnInit(){
-    this.selectedDescriptors = this.profileService.getDescriptors();
+    this.pageTransitionIsfromSignIn = this.navParams.get('pageTransitionIsfromSignIn');
+    this.profileSubsciption = this.profileService
+      .profile$
+      .subscribe((profile: Profile) => {
+        console.log('profile subscription', profile);
+        this.profile = profile;
+        this.profile.descriptors = this.pageTransitionIsfromSignIn? [] : this.profile.descriptors;
+      });
   }
 
   ionViewWillEnter(){
-    this.fromSignIn = this.navParams.get('fromSignIn');
+
   }
 
   ionViewCanLeave(): boolean{return true;}
 
   ngAfterContentInit(){
-    this.hasMinDescriptors.emit(this.selectedDescriptors.length);
+    this.hasMinDescriptors.emit(this.profile.descriptors.length);
   }
 
   ngOnDestroy(){
-    this.profileService.updateDescriptors(this.selectedDescriptors);
-    this.authService.getToken().then((token)=> {
-      this.profileService.storeProfile(token)
-        .subscribe(
-          (updatedProfile) => {
-            console.log('successful', updatedProfile);
-          },
-        (error) => {
-          console.log(error);
-        });
+    this.profileService.setProfile(this.profile);
+    this.authService.getLocalToken()
+      .then((token) => {
+        this.profileService.saveProfileOnServer(token)
+          .subscribe(
+            (updatedProfile) => {
+              this.profileService.broadcastProfile();
+            },
+          (error) => {
+            console.log(error);
+          });
     });
   }
 
-  onSelect(i:number) {
-    const descriptor: string = this.descriptors[i];
-    if(this.selectedDescriptors.indexOf(descriptor) == -1) {
-      this.selectedDescriptors.push(descriptor);
+  onSelect(i: number) {
+    const descriptor = this.descriptors[i];
+    if(this.profile.descriptors.indexOf(descriptor) == -1) {
+      this.profile.descriptors.push(descriptor);
     }
     else {
-      this.selectedDescriptors.splice(this.selectedDescriptors.indexOf(descriptor), 1);
+      this.profile.descriptors.splice(this.profile.descriptors.indexOf(descriptor), 1);
     }
-    this.hasMinDescriptors.emit(this.selectedDescriptors.length);
+    this.hasMinDescriptors.emit(this.profile.descriptors.length);
   }
 
-  isSelected(descriptor:string){
-    return this.selectedDescriptors.indexOf(descriptor) != -1;
+  isSelected(descriptor: string){
+    return this.profile.descriptors.indexOf(descriptor) != -1;
   }
 
   onNext() {

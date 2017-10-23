@@ -3,7 +3,7 @@
 
 <ion-content padding>
 
-    <ion-grid *ngFor="let pigeon of pigeons; let i = index;" (tap)="onTap(i)">
+    <ion-grid *ngFor="let pigeon of pigeons; let i = index;" (tap)="onPigeonTapped(i)">
       <ion-row text-center>
         <ion-col col-4>
           <ion-card-header style="white-space:normal; margin-top:5px; padding:10px 10px 10px 10px">{{ convertTimestampToDate(pigeon.created)| amTimeAgo }}</ion-card-header>

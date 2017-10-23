@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {IonicPage, NavController, ToastController} from 'ionic-angular';
+import {IonicPage, NavController} from 'ionic-angular';
 import {Pigeon} from "../../models/pigeon.model";
 import {SelectedPostPage} from "../selected-post/selected-post";
 import {PigeonService} from "../../services/pigeon.service";
@@ -20,30 +20,26 @@ export class FeedPage implements OnInit, OnDestroy {
 
   constructor(private navCtrl: NavController,
               private pigeonService: PigeonService,
-              private authService: AuthenticationService,
-              private toastCtrl: ToastController) {
+              private authService: AuthenticationService) {
   }
 
-  ngOnInit(){
-
-  }
+  ngOnInit(){}
 
   ionViewWillEnter(){
 
-    this.authService.getToken()
+    this.authService.getLocalToken()
       .then((token) => {
-        this.pigeonsSubscription = this.pigeonService.pigeons$.subscribe((pigeons:Pigeon[]) => {this.pigeons = pigeons;});
-        //this.pigeonService.getPigeons(token).subscribe((pigeons: Pigeon[]) => {this.pigeons = pigeons;})})
+        this.pigeonsSubscription = this.pigeonService.pigeons$.subscribe((pigeons:Pigeon[]) => {this.pigeons = pigeons.reverse();});
         this.refreshPigeons(token);
         this.interval = setInterval(() => {this.refreshPigeons(token);}, 20000);
       });
   }
 
-  refreshPigeons(token:string){
-    this.pigeonService.getPigeons(token);
+  refreshPigeons(token: string){
+    this.pigeonService.getPigeonsFromServer(token);
   }
 
-  onTap(index:number){
+  onPigeonTapped(index:number){
     this.navCtrl.push(this.selectedPostPage, {pigeon: this.pigeons[index]});
   }
 

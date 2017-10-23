@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {IonicPage, ModalController, NavController} from 'ionic-angular';
+import {IonicPage, NavController} from 'ionic-angular';
 import {DescribePage} from "../describe/describe";
 
 @IonicPage()
@@ -11,15 +11,12 @@ export class ProfilePage {
 
   describePage = DescribePage;
 
-  constructor(private modalCtrl: ModalController, private navCtrl: NavController ) {
+  constructor(private navCtrl: NavController ) {
   }
 
 
   onDescriptorsClicked(){
-    // const modal = this.modalCtrl.create(this.describePage, {fromSignIn: false});
-    // modal.present();
-
-    this.navCtrl.push(this.describePage, {fromSignIn: false});
+    this.navCtrl.push(this.describePage, {pageTransitionIsfromSignIn: false});
   }
 
 }

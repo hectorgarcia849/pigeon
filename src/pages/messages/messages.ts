@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import {IonicPage, NavController } from 'ionic-angular';
-import {ChatMetaData } from "../../models/message.model";
+import {Chat } from "../../models/message.model";
 import {SelectedMessagePage} from "../selected-message/selected-message";
 // import {MessagesService} from "../../services/messages.service";
 // import {AuthenticationService} from "../../services/authentication.service";
@@ -18,7 +18,7 @@ import {SelectedMessagePage} from "../selected-message/selected-message";
 })
 export class MessagesPage {
 
-  public chats:ChatMetaData[];
+  public chats:Chat[];
   selectedMessagePage = SelectedMessagePage;
   userId:string;
 

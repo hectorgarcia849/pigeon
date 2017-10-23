@@ -4,7 +4,6 @@ import {Http, Response} from "@angular/http";
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/do';
 import {BehaviorSubject} from "rxjs/BehaviorSubject";
-import {Observable} from "rxjs/Observable";
 
 @Injectable()
 
@@ -18,19 +17,18 @@ export class PigeonService {
   constructor(private http: Http){
   }
 
-  getPigeons(token: string) {
+  getPigeonsFromServer(token: string) {
     this.http.get(`${this.url}/pigeons?token=${token}`)
       .map((response: Response) => {console.log(response.json().pigeons);return response.json().pigeons})
       .subscribe((pigeons:Pigeon[]) =>{this.pigeonsSubject.next(pigeons)});
   }
 
-  sendPigeon(token:string, pigeon:{title:string, to:string, from: string, body:string, encounterDate:number}){
-    const body = pigeon;
-    return this.http.post(`${this.url}/pigeons?token=${token}`, body)
+  sendPigeon(token: string, pigeon:{title:string, to:string, from: string, body:string, encounterDate:number}){
+    return this.http.post(`${this.url}/pigeons?token=${token}`, pigeon)
       .map((response: Response) => {return response.json().pigeon;});
   }
 
-  getPigeonsByOwner(_owner:string){
+  getPigeonsByOwner(_owner: string){
     return this.http.get(`${this.url}/pigeons/${_owner}`)
       .map((response: Response) => {return response.json().pigeons});
   }

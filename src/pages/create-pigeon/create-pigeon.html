@@ -1,0 +1,55 @@
+<!--
+  Generated template for the CreatePigeonPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>Send Pigeon</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+
+  <form #f="ngForm" (submit)="onSendPigeon()" style="height:100%">
+
+          <ion-item>
+            <ion-label floating>Title</ion-label>
+            <ion-input type="text" name="title" [ngModel] required></ion-input>
+          </ion-item>
+
+          <ion-list>
+            <ion-item>
+              <ion-label floating>To</ion-label>
+              <!--<ion-input type="text" name="to" [ngModel] required></ion-input>-->
+              <ion-select name="to" [ngModel]>
+                <ion-option>Her</ion-option>
+                <ion-option>Him</ion-option>
+                <ion-option>Them</ion-option>
+              </ion-select>
+            </ion-item>
+          </ion-list>
+
+          <ion-item>
+            <ion-textarea type="text" placeholder="Share your story..." name="body" [ngModel] required></ion-textarea>
+          </ion-item>
+
+
+          <ion-item>
+            <ion-label floating>Date</ion-label>
+            <ion-datetime displayFormat="MM/DD/YYYY" name="date" [ngModel] #datetime required></ion-datetime>
+          </ion-item>
+
+      <ion-row>
+        <ion-col offset-3 col-6 text-center>
+          <button ion-button outline [disabled]="f.invalid">Share</button>
+        </ion-col>
+      </ion-row>
+
+  </form>
+
+</ion-content>

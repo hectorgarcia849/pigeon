@@ -1,12 +1,14 @@
 
 import {Injectable} from "@angular/core";
-import {ChatMetaData, Message} from "../models/message.model";
+import {Chat, Message} from "../models/message.model";
 import 'rxjs/Rx';
 import * as io from 'socket.io-client';
 import {Socket} from 'socket.io-client';
-
-
-
+import {BehaviorSubject} from "rxjs/BehaviorSubject";
+import {Observable} from "rxjs/Observable";
+import {User} from "../models/user.model";
+import {ReplaySubject} from "rxjs/ReplaySubject";
+import {Http, Response} from "@angular/http";
 
 @Injectable()
 
@@ -14,144 +16,89 @@ export class MessagesService {
 
   allMessages: Message[][];
   messages: Message[] = [];
-  chatMetaData: ChatMetaData[] = [];
+  chats: Chat[] = [];
+  socketConnected$ = new BehaviorSubject<boolean>(false);
+  messageHandler$ = new ReplaySubject<Message>(1);
+  messageListener$: Observable<Message> = this.messageHandler$.asObservable();
+  socketStatus$: Observable<boolean> = this.socketConnected$.asObservable();
   private socket: Socket;
-  private url = 'http://localhost:3000'; //https://pacific-river-87352.herokuapp.com
+  private urlSOCKET = 'http://localhost:4000'; //https://pacific-river-87352.herokuapp.com
+  private urlREST = 'http://localhost:3000';
 
-  constructor() {
-    // this.messages = [{from: {username: 'Hector Garcia', userId: 'asodfoisjaf'}, to:{username: 'friend', userId: '12n3ef9dsn'}, message: 'This is a long time coming; lameness does not suit you buddy -- you need to man up dude', timestamp: new Date(2017,6,20,0,0).getTime()}, {from: {username: 'Hector Garcia', userId: 'asodfoisjaf'}, to:{username: 'friend', userId: '12n3ef9dsn'}, message: 'This is a long time coming; lameness does not suit you buddy -- you need to man up dude', timestamp: new Date(2017,6,20,0,0).getTime()}, {from: {username: 'Hector Garcia', userId: 'asodfoisjaf'}, to:{username: 'friend', userId: '12n3ef9dsn'}, message: 'This is a long time coming; lameness does not suit you buddy -- you need to man up dude', timestamp: new Date(2017,6,20,0,0).getTime()}, {from: {username: 'Hector Garcia', userId: 'asodfoisjaf'}, to:{username: 'friend', userId: '12n3ef9dsn'}, message: 'This is a long time coming; lameness does not suit you buddy -- you need to man up dude', timestamp: new Date(2017,6,20,0,0).getTime()}, {from: {username: 'Hector Garcia', userId: 'asodfoisjaf'}, to:{username: 'friend', userId: '12n3ef9dsn'}, message: 'This is a long time coming; lameness does not suit you buddy -- you need to man up dude', timestamp: new Date(2017,6,20,0,0).getTime()}], [{from: {username: 'Hector Garcia', userId: 'asodfoisjaf'}, to:{username: 'friend', userId: '12n3ef9dsn'}, message: 'This is a long time coming; lameness does not suit you buddy -- you need to man up dude', timestamp: new Date(2017,6,20,0,0).getTime()}, {from: {username: 'Hector Garcia', userId: 'asodfoisjaf'}, to:{username: 'friend', userId: '12n3ef9dsn'}, message: 'This is a long time coming; lameness does not suit you buddy -- you need to man up dude', timestamp: new Date(2017,6,20,0,0).getTime()}, {from: {username: 'Hector Garcia', userId: 'asodfoisjaf'}, to:{username: 'friend', userId: '12n3ef9dsn'}, message: 'This is a long time coming; lameness does not suit you buddy -- you need to man up dude', timestamp: new Date(2017,6,20,0,0).getTime()}, {from: {username: 'Hector Garcia', userId: 'asodfoisjaf'}, to:{username: 'friend', userId: '12n3ef9dsn'}, message: 'This is a long time coming; lameness does not suit you buddy -- you need to man up dude', timestamp: new Date(2017,6,20,0,0).getTime()}, {from: {username: 'Hector Garcia', userId: 'asodfoisjaf'}, to:{username: 'friend', userId: '12n3ef9dsn'}, message: 'This is a long time coming; lameness does not suit you buddy -- you need to man up dude', timestamp: new Date(2017,6,20,0,0).getTime()}];
-    // this.allMessages = [[{from: {username: 'Hector Garcia', userId: 'asodfoisjaf'}, to:{username: 'friend', userId: '12n3ef9dsn'}, message: 'messagegroup1, this is the first message of many, crazyyyyy huh!  Wow look at how this chatbubble exapnds', timestamp: new Date(2017,6,20,0,0).getTime()}, {from: {username: 'Hector Garcia', userId: 'asodfoisjaf'}, to:{username: 'friend', userId: '12n3ef9dsn'}, message: 'messagegroup1', timestamp: new Date(2017,6,20,0,0).getTime()}, {from: {username: 'Hector Garcia', userId: 'asodfoisjaf'}, to:{username: 'friend', userId: '12n3ef9dsn'}, message: 'messagegroup1', timestamp: new Date(2017,6,20,0,0).getTime()}, {from: {username: 'Hector Garcia', userId: 'asodfoisjaf'}, to:{username: 'friend', userId: '12n3ef9dsn'}, message: 'messagegroup1', timestamp: new Date(2017,6,20,0,0).getTime()}, {from: {username: 'Hector Garcia', userId: 'asodfoisjaf'}, to:{username: 'friend', userId: '12n3ef9dsn'}, message: 'messagegroup1', timestamp: new Date(2017,6,20,0,0).getTime()}], [{from: {username: 'Hector Garcia', userId: 'asodfoisjaf'}, to:{username: 'friend', userId: '12n3ef9dsn'}, message: 'messagegroup2', timestamp: new Date(2017,6,20,0,0).getTime()}, {from: {username: 'Hector Garcia', userId: 'asodfoisjaf'}, to:{username: 'friend', userId: '12n3ef9dsn'}, message: 'messagegroup2', timestamp: new Date(2017,6,20,0,0).getTime()}, {from: {username: 'Hector Garcia', userId: 'asodfoisjaf'}, to:{username: 'friend', userId: '12n3ef9dsn'}, message: 'messagegroup2', timestamp: new Date(2017,6,20,0,0).getTime()}, {from: {username: 'Hector Garcia', userId: 'asodfoisjaf'}, to:{username: 'friend', userId: '12n3ef9dsn'}, message: 'This is a long time coming; lameness does not suit you buddy -- you need to man up dude', timestamp: new Date(2017,6,20,0,0).getTime()}, {from: {username: 'Hector Garcia', userId: 'asodfoisjaf'}, to:{username: 'friend', userId: '12n3ef9dsn'}, message: 'This is a long time coming; lameness does not suit you buddy -- you need to man up dude', timestamp: new Date(2017,6,20,0,0).getTime()}], [{from: {username: 'Hector Garcia', userId: 'asodfoisjaf'}, to:{username: 'friend', userId: '12n3ef9dsn'}, message: 'messagegroup3', timestamp: new Date(2017,6,20,0,0).getTime()}, {from: {username: 'Hector Garcia', userId: 'asodfoisjaf'}, to:{username: 'friend', userId: '12n3ef9dsn'}, message: 'This is a long time coming; lameness does not suit you buddy -- you need to man up dude', timestamp: new Date(2017,6,20,0,0).getTime()}, {from: {username: 'Hector Garcia', userId: 'asodfoisjaf'}, to:{username: 'friend', userId: '12n3ef9dsn'}, message: 'This is a long time coming; lameness does not suit you buddy -- you need to man up dude', timestamp: new Date(2017,6,20,0,0).getTime()}, {from: {username: 'Hector Garcia', userId: 'asodfoisjaf'}, to:{username: 'friend', userId: '12n3ef9dsn'}, message: 'This is a long time coming; lameness does not suit you buddy -- you need to man up dude', timestamp: new Date(2017,6,20,0,0).getTime()}, {from: {username: 'Hector Garcia', userId: 'asodfoisjaf'}, to:{username: 'friend', userId: '12n3ef9dsn'}, message: 'This is a long time coming; lameness does not suit you buddy -- you need to man up dude', timestamp: new Date(2017,6,20,0,0).getTime()}], [{from: {username: 'Hector Garcia', userId: 'asodfoisjaf'}, to:{username: 'friend', userId: '12n3ef9dsn'}, message: 'This is a long time coming; lameness does not suit you buddy -- you need to man up dude', timestamp: new Date(2017,6,20,0,0).getTime()}, {from: {username: 'Hector Garcia', userId: 'asodfoisjaf'}, to:{username: 'friend', userId: '12n3ef9dsn'}, message: 'This is a long time coming; lameness does not suit you buddy -- you need to man up dude', timestamp: new Date(2017,6,20,0,0).getTime()}, {from: {username: 'Hector Garcia', userId: 'asodfoisjaf'}, to:{username: 'friend', userId: '12n3ef9dsn'}, message: 'This is a long time coming; lameness does not suit you buddy -- you need to man up dude', timestamp: new Date(2017,6,20,0,0).getTime()}, {from: {username: 'Hector Garcia', userId: 'asodfoisjaf'}, to:{username: 'friend', userId: '12n3ef9dsn'}, message: 'This is a long time coming; lameness does not suit you buddy -- you need to man up dude', timestamp: new Date(2017,6,20,0,0).getTime()}, {from: {username: 'Hector Garcia', userId: 'asodfoisjaf'}, to:{username: 'friend', userId: '12n3ef9dsn'}, message: 'This is a long time coming; lameness does not suit you buddy -- you need to man up dude', timestamp: new Date(2017,6,20,0,0).getTime()}], [{from: {username: 'Hector Garcia', userId: 'asodfoisjaf'}, to:{username: 'friend', userId: '12n3ef9dsn'}, message: 'This is a long time coming; lameness does not suit you buddy -- you need to man up dude', timestamp: new Date(2017,6,20,0,0).getTime()}, {from: {username: 'Hector Garcia', userId: 'asodfoisjaf'}, to:{username: 'friend', userId: '12n3ef9dsn'}, message: 'This is a long time coming; lameness does not suit you buddy -- you need to man up dude', timestamp: new Date(2017,6,20,0,0).getTime()}, {from: {username: 'Hector Garcia', userId: 'asodfoisjaf'}, to:{username: 'friend', userId: '12n3ef9dsn'}, message: 'This is a long time coming; lameness does not suit you buddy -- you need to man up dude', timestamp: new Date(2017,6,20,0,0).getTime()}, {from: {username: 'Hector Garcia', userId: 'asodfoisjaf'}, to:{username: 'friend', userId: '12n3ef9dsn'}, message: 'This is a long time coming; lameness does not suit you buddy -- you need to man up dude', timestamp: new Date(2017,6,20,0,0).getTime()}, {from: {username: 'Hector Garcia', userId: 'asodfoisjaf'}, to:{username: 'friend', userId: '12n3ef9dsn'}, message: 'This is a long time coming; lameness does not suit you buddy -- you need to man up dude', timestamp: new Date(2017,6,20,0,0).getTime()}], [{from: {username: 'Hector Garcia', userId: 'asodfoisjaf'}, to:{username: 'friend', userId: '12n3ef9dsn'}, message: 'This is a long time coming; lameness does not suit you buddy -- you need to man up dude', timestamp: new Date(2017,6,20,0,0).getTime()}, {from: {username: 'Hector Garcia', userId: 'asodfoisjaf'}, to:{username: 'friend', userId: '12n3ef9dsn'}, message: 'This is a long time coming; lameness does not suit you buddy -- you need to man up dude', timestamp: new Date(2017,6,20,0,0).getTime()}, {from: {username: 'Hector Garcia', userId: 'asodfoisjaf'}, to:{username: 'friend', userId: '12n3ef9dsn'}, message: 'This is a long time coming; lameness does not suit you buddy -- you need to man up dude', timestamp: new Date(2017,6,20,0,0).getTime()}, {from: {username: 'Hector Garcia', userId: 'asodfoisjaf'}, to:{username: 'friend', userId: '12n3ef9dsn'}, message: 'This is a long time coming; lameness does not suit you buddy -- you need to man up dude', timestamp: new Date(2017,6,20,0,0).getTime()}, {from: {username: 'Hector Garcia', userId: 'asodfoisjaf'}, to:{username: 'friend', userId: '12n3ef9dsn'}, message: 'This is a long time coming; lameness does not suit you buddy -- you need to man up dude', timestamp: new Date(2017,6,20,0,0).getTime()}]];
-    // //this.chats = [{from: {username: 'Hector Garcia', userId: 'asodfoisjaf'}, lastMessage:'Hear the latest on Kyrie???', timestamp: new Date(2017,6,20,0,0).getTime()}, {from: {username: 'Hector Garcia', userId: 'asodfoisjaf'}, lastMessage:'Hear the latest on Kyrie???', timestamp: new Date().getTime()}, {from: {username: 'Hector Garcia', userId: 'asodfoisjaf'}, lastMessage:'Hear the latest on Kyrie???', timestamp: new Date().getTime()}];
-    // const userId = this.authService.getActiveUser().uid;
-    // this.getChatMetaDataFromDB(userId).then((metaData)=>{this._chats.next(metaData)});
+  constructor(private http: Http) {}
+
+  connect(token: string) {
+    console.log('connect');
+    this.socket = io(`${this.urlSOCKET}/?token=${token}`);
+    this.socket.on('connection', () => {console.log('socket connected'); this.socketConnected$.next(true);});
+    this.socket.on('createChatId', (withUser) => {console.log(`created chat with ${withUser}`)});
+    this.socket.on('joinChatById', (chat_id: string) => {});
+    this.socket.on('leaveChat', (chat_id: string) => {});
+    this.socket.on('disconnection', () => {console.log('socket disconnected'); this.socketConnected$.next(false);});
+    this.socket.on('message', (message:Message) => {console.log('message returned from server'); this.messageHandler$.next(message);});
   }
 
-  connect(token): Socket{
-    this.socket = io(`${this.url}?token=${token}`);
-    return this.socket;
+  createChatProfileForUserOnServer(token: string, user_id: string) {
+    console.log('msgService request to create Chats for', user_id, token);
+    return this.http.post(`${this.urlREST}/chats/profile?token=${token}`, user_id)
+      .map((response: Response) => {
+        console.log('created', response.json());
+      })
+      .catch((error: Response) => Observable.throw(error)
+      );
   }
 
-  sendMessage(message:Message){
-    this.socket.emit('message', message);
+  getChatProfileForUserOnServer(token: string){
+    console.log('msgService request to get Chats');
+    return this.http.get(`${this.urlREST}/chats/profile?token=${token}`)
+      .map((response: Response) => {
+        console.log('get', response.json());
+      })
+      .catch((error: Response) =>
+        Observable.throw(error)
+      );
   }
 
-  createChatRoom(id:string){
-    this.socket.join(id);
+  updateChatsForUserOnserver(){}
+
+  getChats() {
+
+  }
+
+
+  createChat(addUser: string, callback:(chat_id: string) => void){
+    /* Creates new room and joins the user.  A chat room is created with the
+    first message to a user with which there are no open conversations with. */
+    console.log('msgService emits createChat request with user ', addUser);
+    this.socket.emit('createChatId', addUser, callback);
+  }
+
+  joinChat(chat_id: string, callback:(chat_id: string) => void) {
+    console.log(`User joins chat: ${chat_id}`);
+    this.socket.emit('joinChatById', chat_id, callback);
+  }
+
+  sendMessage(message: Message, chat_id: string, callback:(status: string) => void){
+    const body = {message, chat_id};
+    console.log(body);
+    this.socket.emit('message', body, callback);
   }
 
   deleteChatRoom(id:string){
     this.socket.leave(id);
   }
+
+  // listen(event:string): Observable<any> {
+  //   return new Observable(observer => {
+  //     this.socket.on(event, data => {
+  //       observer.next(data);
+  //       console.log('message back', data);
+  //     });
+  //     return () => {
+  //       this.socket.off(event);
+  //     }
+  //   });
+  // }
+
 }
 
-
-
-//   getMessages(chat_id:string){
-//     return firebase.database().ref('/chats/'+ chat_id + '/messages');
-//   }
-//
-//   getLastMessage(token:string, chat_id:string){
-//     return this.http.get('https://pigeon-e922b.firebaseio.com/chats/' + chat_id + '/messages.json?auth=' + token)
-//       .map((response:Response) => {console.log(response.json()); return response.json();});
-//   }
-//
-//
-//
-//   createChatMetaData(token:string, chatMetaData:ChatMetaData){
-//     return this.http.put('https://pigeon-e922b.firebaseio.com/chats/'+ chatMetaData.chat_id +'/chatmetadata.json?auth=' + token, chatMetaData)
-//         .map((response:Response) => {return response.json();});
-//     //parallel calls, use forkjoin
-//     //dependent sequential calls, use flatmap
-//   }
-//
-//   private getChatMetaDataFromDB(userId:string): Promise<ChatMetaData[]> {
-//     return new Promise((resolve, reject) => {
-//       firebase.database().ref('/chats/')
-//         .on('value', (chatMetaData) => {
-//           console.log(chatMetaData.val());
-//           if(!chatMetaData.val()){
-//             reject(chatMetaData.val());
-//           } else {
-//             resolve(chatMetaData.val());
-//           }
-//         });
-//     });
-//   }
-//
-//   chatMetaDataExistsFor(participants:{from:{userId:string, username:string}, to:{userId:string, username:string}}): Promise<boolean> {
-//
-//     const chat_id1 = participants.from.userId.concat(participants.to.userId);
-//     const chat_id2 = participants.to.userId.concat(participants.from.userId);
-//     let metaDataExists = false;
-//
-//     return new Promise((resolve) =>{
-//
-//       firebase.database().ref('/chats/')
-//         .on('value', (chatMetaData) =>{
-//           let result = [];
-//           console.log(chatMetaData.val());
-//           if(!chatMetaData.val()){
-//             metaDataExists = false;
-//           }
-//           else {
-//             const keys = Object.keys(chatMetaData.val());
-//             console.log(keys);
-//             console.log(chatMetaData.val());
-//             for(let key of keys){
-//               let id = chatMetaData.val()[key];
-//               result.push(id);
-//             }
-//             console.log(result);
-//             if(result.indexOf(chat_id1) == -1 && result.indexOf(chat_id2) == -1){
-//               metaDataExists = false;
-//             } else {
-//               metaDataExists = true;
-//             }
-//           }
-//           resolve(metaDataExists);
-//         });
-//     });
-//   }
-//
-//   findChatId(participants:{from:{userId:string, username:string}, to:{userId:string, username:string}}): Promise<string> {
-//     const chat_id1 = participants.from.userId.concat(participants.to.userId);
-//     const chat_id2 = participants.to.userId.concat(participants.from.userId);
-//
-//     return new Promise((resolve) =>{
-//       let chat_id;
-//       firebase.database().ref('/users/' + participants.from.userId + '/chatmetadata')
-//         .on('value', (chatMetaData) =>{
-//           let result = [];
-//           if(!chatMetaData.val()){
-//             resolve(chat_id);
-//           }
-//           else {
-//             const keys = Object.keys(chatMetaData.val());
-//             for(let key of keys){
-//               let id = chatMetaData.val()[key].chat_id;
-//               result.push(id);
-//             }
-//             if(result.indexOf(chat_id1) != -1){
-//               resolve(chat_id1);
-//             } else if(result.indexOf(chat_id2) != -1){
-//               resolve(chat_id2);
-//             } else {
-//               resolve(chat_id);
-//             }
-//           }
-//         });
-//     });
-//
-//   }
-//
-//   sendMessage(token:string, message:Message, chat_id:string){
-//     console.log(chat_id);
-//     return this.http.post('https://pigeon-e922b.firebaseio.com/chats/' + chat_id + '/messages.json?auth=' + token, message)
-//       .map((response: Response) => {return response.json();});
-//   }
-//
-//   deleteMessages(){}
-//
-//   deleteMessage(){}
-//
-// }

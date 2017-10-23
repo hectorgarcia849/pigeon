@@ -7,7 +7,7 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { MyApp } from './app.component';
 import {CreateMessagePage} from "../pages/create-message/create-message";
 import {DescribePage} from "../pages/describe/describe";
-import {CreatePostPage} from "../pages/create-post/create-post";
+import {CreatePigeonPage} from "../pages/create-pigeon/create-pigeon";
 import {FeedPage} from "../pages/feed/feed";
 import {SelectedMessagePage} from "../pages/selected-message/selected-message";
 import {SelectedPostPage} from "../pages/selected-post/selected-post";
@@ -25,12 +25,13 @@ import {PigeonService} from "../services/pigeon.service";
 import {TabsService} from "../services/tabs.service";
 import {IonicStorageModule} from "@ionic/storage";
 import {MessagesService} from "../services/messages.service";
+import {AngularSvgIconModule} from "angular-svg-icon";
 
 @NgModule({
   declarations: [
     MyApp,
     CreateMessagePage,
-    CreatePostPage,
+    CreatePigeonPage,
     DescribePage,
     FeedPage,
     MessagesPage,
@@ -48,12 +49,13 @@ import {MessagesService} from "../services/messages.service";
     ComponentsModule,
     HttpModule,
     IonicStorageModule.forRoot(),
+    AngularSvgIconModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [
     MyApp,
     CreateMessagePage,
-    CreatePostPage,
+    CreatePigeonPage,
     DescribePage,
     FeedPage,
     MessagesPage,

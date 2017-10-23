@@ -1,19 +1,18 @@
 import {BehaviorSubject} from "rxjs/BehaviorSubject";
 import {TabServiceObjectModel} from "../models/tab-service-object.model";
+import {TAB} from '../utils/tab';
 
 export class TabsService {
-
-  private subjectIndexChange = new BehaviorSubject<TabServiceObjectModel>({index: -1, loadChild:[], loadOptions:[]});
-  navItem$ = this.subjectIndexChange.asObservable();
+  private tabChangeSubject = new BehaviorSubject<TabServiceObjectModel>({rootTab: -1, pagesToPush:[], loadOptions:[]});
+  tabChange$ = this.tabChangeSubject.asObservable();
 
   constructor(){}
 
-  changeIndex(index:number, loadChild:any[], loadOptions?:any[]){
-    //index refers to which tab to select from left to right, it makes that the root.  Then, allows any child views to be loaded on this with options.
-    this.subjectIndexChange.next({index:index, loadChild:loadChild, loadOptions:loadOptions});
-    console.log({index:index, loadChild:loadChild, loadOptions:loadOptions});
+  changeTab(newRootTab: TAB, pagesToPush: any[], loadOptions = []){
+    /*
+       newRootTab refers to which rootTab to select from left to right and sets it as the new root.
+       Allows any child views to be loaded on this with any specified options.
+    */
+    this.tabChangeSubject.next({rootTab: newRootTab, pagesToPush, loadOptions});
   }
-
-
-
 }

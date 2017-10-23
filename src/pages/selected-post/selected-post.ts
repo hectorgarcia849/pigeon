@@ -1,9 +1,10 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {IonicPage, NavController, NavParams, ToastController} from 'ionic-angular';
 import {Pigeon} from "../../models/pigeon.model";
-//import {SelectedMessagePage} from "../selected-message/selected-message";
 import {TabsService} from "../../services/tabs.service";
-//import {AuthenticationService} from "../../services/authentication.service";
+import {AuthenticationService} from "../../services/authentication.service";
+import {SelectedMessagePage} from "../selected-message/selected-message";
+import {TAB} from "../../utils/tab";
 
 @IonicPage()
 @Component({
@@ -20,31 +21,29 @@ export class SelectedPostPage implements OnInit {
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
               private tabsService: TabsService,
-              private toastCtrl: ToastController) {
+              private toastCtrl: ToastController,
+              private authService: AuthenticationService) {
   }
 
   ngOnInit() {
     this.nav.setBackButtonText('BACK');
     this.pigeon = this.navParams.get('pigeon');
-    console.log(this.pigeon);
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad SelectedPostPage');
   }
 
   onLike(element){
+    console.log('element liked');
   }
 
   onSendMessage() {
-    // if(this.pigeon.from.uid != this.authService.getActiveUser().uid){
-    //   const messagesPageIndex = 1;
-    //   this.navCtrl.pop();
-    //   this.tabsService.changeIndex(messagesPageIndex, [SelectedMessagePage], [{messagesFrom: -1, sender: {username: this.pigeon.from.username, userId: this.pigeon.from.uid}, mode: 'newMessage'}]);
-    // } else {
-    //   const toast = this.toastCtrl.create({message:'Unable to write message to self', duration: 2000});
-    //   toast.present();
-  //   }
+    if(this.pigeon._creator != this.authService.getUser()._id){
+      this.navCtrl.pop();
+      this.tabsService.changeTab(TAB.MESSAGES, [SelectedMessagePage], [{recipient: {username: this.pigeon.from, _id: this.pigeon._creator}, mode: 'newChat'}]);
+    } else {
+      const toast = this.toastCtrl.create({message:'Unable to write message to self', duration: 2000});
+      toast.present();
+    }
   }
-
 }

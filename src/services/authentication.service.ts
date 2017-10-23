@@ -4,63 +4,89 @@ import {Injectable} from "@angular/core";
 import {Observable} from "rxjs/Observable";
 import {Storage} from "@ionic/storage";
 import {BehaviorSubject} from "rxjs/BehaviorSubject";
+import {errorObject} from "rxjs/util/errorObject";
 
 @Injectable()
 
 export class AuthenticationService {
 
-  private subjectIsLoggedIn = new BehaviorSubject<boolean>(false);
-  authState$ = this.subjectIsLoggedIn.asObservable();
-  user:User;
-  private url = 'http://localhost:3000'; //https://pacific-river-87352.herokuapp.com
+  private IsLoggedInSubject = new BehaviorSubject<boolean>(false);
+  isLoggedIn$ = this.IsLoggedInSubject.asObservable();
+  private user: User;
+  private token: string;
+  private url = 'http://localhost:3000';
  // private url = 'https://pacific-river-87352.herokuapp.com'
 
-
-
-  constructor(private http: Http, private storage: Storage){
+  constructor(private http: Http, private storage: Storage) {
   }
 
-  signup(email: string, password: string){
-    const body = JSON.stringify({email:email, password:password});
-    console.log(body);
+  signup(email: string, password: string) {
+    const body = JSON.stringify({email: email, password: password});
     const headers = new Headers({'Content-Type': 'application/json'});
-
     return this.http.post(`${this.url}/users`, body, {headers})
       .map((response: Response) => {
-        console.log(response.json());
         this.user = response.json().user;
-        this.storage.set('token', response.json().token);
-        return response.json();})
+        this.setAndStoreToken(response.json().token);
+        this.updateLoggedInSubject(true);
+        return response.json();
+      })
       .catch((error: Response) => Observable.throw(error.json()));
   }
 
-  signin(email: string, password:string){
+  signin(email: string, password:string) {
     const body = JSON.stringify({email:email.toLowerCase(), password:password});
     const headers = new Headers({'Content-Type': 'application/json'});
-
     return this.http.post(`${this.url}/users/login`, body, {headers})
       .map((response: Response) => {
-        console.log(response.json());
         this.user = response.json().user;
-        this.storage.set('token', response.json().token);
-        return response.json();})
+        this.setAndStoreToken(response.json().token)
+        this.updateLoggedInSubject(true);
+        return response.json();
+      })
       .catch((error: Response) => Observable.throw(error));
   }
-
-  getToken(): Promise<string> {
-    return this.storage.get('token');
+  private setToken(token) {
+    this.token = token;
+  }
+  setAndStoreToken(token) {
+    this.setToken(token);
+    this.storage.set('token', token);
   }
 
-  getUser() {
+  getLocalToken(): Promise<string> {
+    return this.storage.get('token').then((token) => {
+      return new Promise<string>((resolve, reject) => {
+        if(token) {
+          resolve(token);
+        } else {
+          reject(token);
+        }
+      });
+    });
+  }
+
+  getUserFromDatabase(token: string) {
+    return this.http.get(`${this.url}/users/me?token=${token}`)
+      .map((response: Response) => this.user = response.json().user)
+      .catch((error: Response) => {
+        return Observable.throw(error)
+    });
+  }
+
+  getUser(): User {
     return this.user;
   }
 
-  logout():Promise<any> {
+  setUser(user: User) {
+    this.user = user;
+  }
+
+  logout(): Promise<any> {
+    this.updateLoggedInSubject(false);
     return this.storage.remove('token');
   }
 
-  updateLoggedInState(state:boolean){
-    this.subjectIsLoggedIn.next(state);
+  updateLoggedInSubject(state:boolean){
+    this.IsLoggedInSubject.next(state);
   }
-
 }

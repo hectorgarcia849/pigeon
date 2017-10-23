@@ -1,13 +1,13 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-import { CreatePostPage } from './create-post';
+import { CreatePigeonPage } from './create-pigeon';
 
 @NgModule({
   declarations: [
-    CreatePostPage,
+    CreatePigeonPage,
   ],
   imports: [
-    IonicPageModule.forChild(CreatePostPage)
+    IonicPageModule.forChild(CreatePigeonPage)
   ],
 })
 export class CreatePostPageModule {}

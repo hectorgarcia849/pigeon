@@ -4,41 +4,41 @@
 
 <ion-content padding>
 
-  <div style="height:100px"></div>
+  <div style="height:50px"></div>
 
   <ion-grid>
 
     <ion-row text-center>
       <ion-col>
-        <h1>Pigeon</h1>
+        <svg-icon src="../../assets/icon/Pigeon_Logo.svg" id="pigeon-icon"></svg-icon>
       </ion-col>
     </ion-row>
 
-    <ion-row style="height:50px"></ion-row>
+    <ion-row style="height:20px"></ion-row>
 
     <form #f="ngForm" (ngSubmit)="onSubmit(f)">
       <ion-item>
-        <ion-label floating>EMAIL</ion-label>
+        <ion-label floating class="signin-input-label">EMAIL</ion-label>
         <ion-input type="email" name="email" ngModel required></ion-input>
       </ion-item>
 
       <ion-item *ngIf="!isReturningUser">
-        <ion-label floating>USERNAME</ion-label>
+        <ion-label floating class="signin-input-label">USERNAME</ion-label>
         <ion-input type="text" name="username" ngModel required></ion-input>
       </ion-item>
 
       <ion-item *ngIf="!isReturningUser">
-        <ion-label floating>FIRSTNAME</ion-label>
+        <ion-label floating class="signin-input-label">FIRSTNAME</ion-label>
         <ion-input type="text" name="firstName" ngModel required></ion-input>
       </ion-item>
 
       <ion-item *ngIf="!isReturningUser">
-        <ion-label floating>LASTNAME</ion-label>
+        <ion-label floating class="signin-input-label">LASTNAME</ion-label>
         <ion-input type="text" name="lastName" ngModel required></ion-input>
       </ion-item>
 
       <ion-item>
-        <ion-label floating>PASSWORD</ion-label>
+        <ion-label floating class="signin-input-label">PASSWORD</ion-label>
         <ion-input type="password" name="password"ngModel required [minlength]="8"></ion-input>
       </ion-item>
 

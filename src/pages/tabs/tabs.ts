@@ -4,10 +4,11 @@ import {FeedPage} from "../feed/feed";
 import {MessagesPage} from "../messages/messages";
 import {ProfilePage} from "../profile/profile";
 import {Keyboard} from "@ionic-native/keyboard";
-import {CreatePostPage} from "../create-post/create-post";
+import {CreatePigeonPage} from "../create-pigeon/create-pigeon";
 import {TabsService} from "../../services/tabs.service";
 import {Subscription} from "rxjs/Subscription";
 import {TabServiceObjectModel} from "../../models/tab-service-object.model";
+import {TAB} from "../../utils/tab";
 
 @IonicPage()
 @Component({
@@ -19,12 +20,12 @@ export class TabsPage implements OnInit, OnDestroy {
   feedPage = FeedPage;
   messagesPage = MessagesPage;
   profilePage = ProfilePage;
-  createPostPage = CreatePostPage;
+  createPostPage = CreatePigeonPage;
   isKeyboardShowing = false;
   keyboardOpen;
   keyboardClosed;
-  subscription:Subscription;
-  index:number = 2;
+  remoteTabChangeSubscription: Subscription;
+  tab: TAB = TAB.FEED;
 
   @ViewChild('tabs') tabsRef: Tabs;
   @ViewChild('messagestab') msgTab: Tab;
@@ -36,27 +37,8 @@ export class TabsPage implements OnInit, OnDestroy {
   constructor(private keyboard: Keyboard, private tabsService: TabsService, private navCtrl: NavController) {}
 
   ngOnInit() {
-    this.keyboardOpen = this.keyboard.onKeyboardShow().subscribe((data) => { console.log('kb shown'); this.isKeyboardShowing = true; });
-    this.keyboardClosed = this.keyboard.onKeyboardHide().subscribe((data) => { console.log('kb hid'); this.isKeyboardShowing = false; });
-    this.subscription = this.tabsService.navItem$
-      .subscribe((data: TabServiceObjectModel) => {
-        console.log(data);
-        if(data.index > -1) {
-          this.index = data.index;
-          console.log(data.index);
-        }
-        this.tabsRef.select(this.index);
-        for(let i = 0; i < data.loadChild.length; i++){
-          if(data.loadOptions.length > 0){
-            const params = data.loadOptions[i];
-            this.navCtrl.push(data.loadChild[i], params);
-            console.log(data.loadChild[i], params);
-          } else {
-            this.navCtrl.push(data.loadChild[i]);
-          }
-        }
-
-      });
+    this.subscribeToKeyboardEvents();
+    this.subscribeToRemoteTabChangeEvents();
   }
 
   isKeyboardOpen() {
@@ -65,12 +47,37 @@ export class TabsPage implements OnInit, OnDestroy {
     }
     else {
       this.tabsRef.setTabbarHidden(false);
-
     }
   }
 
+  subscribeToKeyboardEvents() {
+    this.keyboardOpen = this.keyboard.onKeyboardShow()
+      .subscribe(() => this.isKeyboardShowing = true);
+    this.keyboardClosed = this.keyboard.onKeyboardHide()
+      .subscribe(() => this.isKeyboardShowing = false);
+  }
+
+  subscribeToRemoteTabChangeEvents() {
+    this.remoteTabChangeSubscription = this.tabsService.tabChange$
+      .subscribe(
+        (data: TabServiceObjectModel) => {
+          if(data.rootTab > -1) {
+            this.tab = data.rootTab;
+          }
+          this.tabsRef.select(this.tab);
+          this.pushPagesWithOptions(data.pagesToPush, data.loadOptions);
+        });
+  }
+
+  pushPagesWithOptions(pages: any[], options: any[]) {
+    for(let i = 0; i < pages.length; i++){
+      const params = options[i];
+      const page = pages[i];
+      this.navCtrl.push(page, params);
+    }
+  }
   ngOnDestroy() {
-    this.subscription.unsubscribe();
+    this.remoteTabChangeSubscription.unsubscribe();
   }
 
 }

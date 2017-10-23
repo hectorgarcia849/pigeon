@@ -1,4 +1,4 @@
-import {Component, OnInit } from '@angular/core';
+import {Component} from '@angular/core';
 import {IonicPage, NavController, NavParams} from 'ionic-angular';
 
 
@@ -9,11 +9,11 @@ import {IonicPage, NavController, NavParams} from 'ionic-angular';
 })
 export class DescribePage {
 
-  descriptors:number = 0;
-  fromSignIn:boolean = false;
+  descriptors: number = 0;
+  pageTransitionIsFromSignIn:boolean = false;
 
   constructor(public navCtrl: NavController, public navParams: NavParams) {
-    this.fromSignIn = this.navParams.get('fromSignIn');
+    this.pageTransitionIsFromSignIn = this.navParams.get('pageTransitionIsFromSignIn');
   }
 
   onNext() {

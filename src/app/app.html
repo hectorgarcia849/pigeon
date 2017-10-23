@@ -8,9 +8,11 @@
   </ion-header>
   <ion-content>
     <ion-list no-lines>
+      <!--if not logged in-->
+      <button ion-item icon-left *ngIf="!isLoggedIn">About Pigeon</button>
+      <!--if logged in-->
       <ion-item ion-item *ngIf="isLoggedIn">{{username}}</ion-item>
-      <button ion-item icon-left (click)="onLoad(signinPage)" *ngIf="!isLoggedIn"><ion-icon name="person"></ion-icon>Sign in</button>
-      <button ion-item icon-left (click)="onLogOut(signinPage)" *ngIf="isLoggedIn">Log out</button>
+      <button ion-item icon-left (click)="onLogOut()" *ngIf="isLoggedIn">Log out</button>
       <button ion-item *ngIf="isLoggedIn">Pigeons Sent</button>
       <button ion-item *ngIf="isLoggedIn">Pigeons Liked</button>
     </ion-list>
