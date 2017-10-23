@@ -19,8 +19,8 @@ export class PigeonService {
 
   getPigeonsFromServer(token: string) {
     this.http.get(`${this.url}/pigeons?token=${token}`)
-      .map((response: Response) => {console.log(response.json().pigeons);return response.json().pigeons})
-      .subscribe((pigeons:Pigeon[]) =>{this.pigeonsSubject.next(pigeons)});
+      .map((response: Response) => response.json().pigeons)
+      .subscribe((pigeons:Pigeon[]) => this.pigeonsSubject.next(pigeons));
   }
 
   sendPigeon(token: string, pigeon:{title:string, to:string, from: string, body:string, encounterDate:number}){
